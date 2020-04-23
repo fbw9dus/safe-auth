@@ -93,9 +93,9 @@ app.get('/login',(req,res)=> {
 // um alle anfragen zu checken
 
 function checkAuth(req,res,next){
-  // /{path}?token=2131239123...
   try {
-    req.user = jwt.verify(req.query.token, secret);
+    const token = req.headers['sars-cov-2-covid-19'];
+    req.user = jwt.verify(token, secret);
     next();
   }
   catch (error){

@@ -27,23 +27,29 @@ function App() {
     .then( result   => setState({ ...state, registered:result.success }) );
   }
 
+  const fetchOptions = {
+    headers: {
+      "Sars-CoV-2-Covid-19": token
+    }
+  }
+
   const check = e => {
     e.preventDefault();
-    fetch(`/check2?token=${token}`)
+    fetch(`/check2`,fetchOptions)
     .then( response => response.json() )
     .then( result   => setState({ ...state, checked:result.success }) );
   }
 
   const routerGet = e => {
     e.preventDefault();
-    fetch(`/router?token=${token}`)
+    fetch(`/router`,fetchOptions)
     .then( response => response.json() )
     .then( result   => setState({ ...state, checked:result.success }) );
   }
 
   const routerPost = e => {
     e.preventDefault();
-    fetch(`/router?token=${token}`,{method:'POST'})
+    fetch(`/router`, { ...fetchOptions, method:'POST' } )
     .then( response => response.json() )
     .then( result   => setState({ ...state, checked:result.success }) );
   }
