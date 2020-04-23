@@ -12,7 +12,7 @@
 
   Was ist denn so ein Hash:
     -- Der hash ist das Ergebnis einer Hashfunktion
-       z.B.: sha1, sh512, md5, fnv32
+       z.B.: sha1, sha512, md5, fnv32
        fnv32('hallo') => 12698376921
        fnv32('hallö') => 12938792187
        fnv32('hallo') == fnv32('hallo')
@@ -34,48 +34,73 @@ const secret  = 'a769sd876as97d65as86c576c53a643s264a3';
 
 const User = {};
 
+app.get('/register',(req,res)=> {
+  // req.query => /register?name=asd&pass=123456
+  // name und passwort aus dem anmelde formular
+  const { name, pass, email } = req.query;
+
+  // test: gibt es den benutzer mit [name]
+  if ( User[name] ) return res.json({
+    success:false,
+    error:{name:['This user name is taken.']}
+  });
+
+  // if ( Object.entries(User).reduce( (a,{idx,user})=>{
+  //   return a || user.email === email
+  // }, false)) return res.json({
+  //   success:false,
+  //   error:{email:['This email is already in use.']}
+  // });
+
+  // hashe das passwort und lege einen neuen benutzer
+  // in der datenbank an
+  bcrypt.hash(pass, 5, (err,hash) => {
+    if (err) return res.json({success:false});
+    // schreibe den benutzer in die "datenbank"
+    User[name] = { name, pass:hash }
+    // sage dem benutzer das die registrierung erfolgreich war
+    res.json({success:true});
+  });
+
+});
+
 app.get('/login',(req,res)=> {
   // name und passwort aus dem anmelde formular
+  // req.body    => POST/PUT/UPDATE(fetch+json) {id:"123",name:"asd",pass:"213"}
+  // req.params  => /login/:name/:pass (/login/asd/123456)
+  // req.query   => /login?name=asd&pass=123456
   const { name, pass } = req.query;
 
   // test: gibt es den benutzer mit [name]
-  if ( ! User[name] ) return res.json({success:false});
+  if ( ! User[name] ) return res.json({
+    success:false,
+    error:{name:['Username or Password wrong']}
+  });
 
   bcrypt.compare(
     pass,            // klartext passwort von benutzer
     User[name].pass, // hashed passwort aus db
     function(err, result) {
-      const token = result ? jwt.sign({name},secret,{expiresIn:'5s'}) : null;
+      const token = result ? jwt.sign({name},secret,{expiresIn:'100s'}) : null;
       console.log('login for', name, result, token );
-      //
+      // schicke dem frontend
       return res.json({ success:result, token });
   });
-
 });
 
-app.get('/check',(req,res)=> { // /check?token=2131239123...
+function checkAuth(req,res,next){
+  // /{path}?token=2131239123...
   try {
-    var decoded = jwt.verify(req.query.token, secret);
-    res.json({success:true,user:decoded})
-  } catch (error){
-    res.json({success:false,error})
+    req.user = jwt.verify(req.query.token, secret);
+    next();
   }
-})
+  catch (error){
+    res.json({success:false,error});
+  }
+}
 
-app.get('/register',(req,res)=> {
-  // name und passwort aus dem anmelde formular
-  const { name, pass } = req.query;
-
-  // test: gibt es den benutzer mit [name]
-  if ( User[name] ) return res.json({success:false});
-
-  // hashe das passwort und lege einen neuen benutzer
-  // in der datenbank an
-  bcrypt.hash(pass, 5, function(err, hash) {
-    User[name] = { name, pass:hash }
-    return res.json({success:true});
-  });
-
+app.get('/check', checkAuth, (req,res)=> {
+  res.json({success:true,user:req.user});
 });
 
 app.listen(3001);

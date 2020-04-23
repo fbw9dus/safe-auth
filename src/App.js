@@ -29,7 +29,7 @@ function App() {
 
   const check = e => {
     e.preventDefault();
-    fetch(`/check?token=${token}`)
+    fetch(`/check2?token=${token}`)
     .then( response => response.json() )
     .then( result   => setState({ ...state, checked:result.success }) );
   }
