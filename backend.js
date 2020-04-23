@@ -88,6 +88,10 @@ app.get('/login',(req,res)=> {
   });
 });
 
+// Die checkAuth middleware kann bei jeder beliebigen route
+// oder mit einem router mittles router.use benutzt werden
+// um alle anfragen zu checken
+
 function checkAuth(req,res,next){
   // /{path}?token=2131239123...
   try {
@@ -99,8 +103,28 @@ function checkAuth(req,res,next){
   }
 }
 
+// benutzung auf einer einzelnen route
+
 app.get('/check', checkAuth, (req,res)=> {
   res.json({success:true,user:req.user});
 });
+
+// benutzung mit einem router
+
+const fakeController = (req,res)=> {
+  res.json({success:true,user:req.user});
+}
+
+const router = express.Router();
+
+router
+  .use(checkAuth)
+  .route("/")
+  .get(fakeController)
+  .post(fakeController);
+
+app.use('/router',router);
+
+// app starten
 
 app.listen(3001);

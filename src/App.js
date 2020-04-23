@@ -34,10 +34,25 @@ function App() {
     .then( result   => setState({ ...state, checked:result.success }) );
   }
 
+  const routerGet = e => {
+    e.preventDefault();
+    fetch(`/router?token=${token}`)
+    .then( response => response.json() )
+    .then( result   => setState({ ...state, checked:result.success }) );
+  }
+
+  const routerPost = e => {
+    e.preventDefault();
+    fetch(`/router?token=${token}`,{method:'POST'})
+    .then( response => response.json() )
+    .then( result   => setState({ ...state, checked:result.success }) );
+  }
 
   if ( login ) return <h1>
       Login erfolgreich: {name}
       <button onClick={check}>testen</button>
+      <button onClick={routerGet}>get</button>
+      <button onClick={routerPost}>post</button>
     </h1>
 
   return ( <>
