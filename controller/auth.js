@@ -1,4 +1,6 @@
 
+const { validationResult } = require('express-validator');
+
 const bcrypt  = require('bcrypt');
 const jwt     = require('jsonwebtoken');
 const secret = 'a769sd876as97d65as86c576c53a643s264a3';
@@ -6,24 +8,18 @@ const secret = 'a769sd876as97d65as86c576c53a643s264a3';
 const User = require('../model/User');
 
 const registerController = async (req,res)=> {
-  // req.query => /register?name=asd&pass=123456
+  // validator checken
+  const errors = validationResult(req);
+  if ( ! errors.isEmpty() ){
+    res
+      .status(500)
+      .json({success:false,errors:errors.array()});
+    console.log(errors.array());
+    return;
+  }
+
   // name und passwort aus dem anmelde formular
-  const { name, pass, email } = req.query;
-
-  // test: gibt es den benutzer mit [name]?
-  const user = await User.findOne({userName:name});
-  if ( user ) return res.json({
-    success:false,
-    error:{name:['This user name is taken.']}
-  });
-
-  // test: gib es schon einen benutzer mit [email]?
-  const matches = await User.find({email});
-  if ( matches && matches.length > 0 )
-  return res.json({
-    success:false,
-    error:{email:['This email is already in use.']}
-  });
+  const { name, pass, email } = req.body;
 
   // hashe das passwort und lege einen neuen benutzer
   // in der datenbank an
@@ -43,11 +39,7 @@ const registerController = async (req,res)=> {
 }
 
 const loginController = async (req,res)=> {
-  // name und passwort aus dem anmelde formular
-  // req.body    => POST/PUT/UPDATE(fetch+json) {id:"123",name:"asd",pass:"213"}
-  // req.params  => /login/:name/:pass (/login/asd/123456)
-  // req.query   => /login?name=asd&pass=123456
-  const { name, pass } = req.query;
+  const { name, pass } = req.body;
 
   // test: gibt es den benutzer mit [name]?
   const user = await User.findOne({userName:name});

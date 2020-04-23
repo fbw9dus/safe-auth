@@ -6,6 +6,8 @@ import {
   Link
 } from 'react-router-dom';
 
+import { fetchPost } from '../auth.js'
+
 export default function Login() {
   const [state,setState] = React.useState({
     name:'', pass:'', twice:''
@@ -15,9 +17,8 @@ export default function Login() {
 
   const submit = e => {
     e.preventDefault();
-    fetch(`/auth/register?name=${name}&pass=${pass}&email=${email}`)
-    .then( response => response.json() )
-    .then( result   => setState({ ...state, registered:result.success }) );
+    fetchPost( '/auth/register', { body:{ name, email, pass } })
+    .then( result => setState({ ...state, registered:result.success }) );
   }
 
   if ( registered ) return <Redirect to="/"/>

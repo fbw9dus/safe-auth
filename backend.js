@@ -24,12 +24,13 @@
        --> Backend kann mit [verify] das token checken und daten herauslesen
 */
 
-const colors   = require('colors');
-const mongoose = require('mongoose');
-const express  = require('express');
-const app      = express();
+const colors     = require('colors');
+const mongoose   = require('mongoose');
+const express    = require('express');
+const bodyParser = require('body-parser');
+const app        = express();
 
-app.use( require('body-parser').json() );
+app.use( bodyParser.json() );
 
 // Verbindung mit Datenbank aufbauen
 mongoose.connect("mongodb://localhost:27017/safe-auth", {

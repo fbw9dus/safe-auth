@@ -7,6 +7,15 @@
 
 window.AUTH_TOKEN = localStorage.getItem('jwt');
 
+const fetchPost = async (url,opts={})=> {
+  opts.method = 'POST'
+  if ( ! opts.headers ) opts.headers = {}
+  opts.headers['Content-Type'] = 'application/json';
+  opts.body = JSON.stringify( opts.body );
+  const response = await fetch(url,opts);
+  return           await response.json()
+}
+
 const fetchWithAuth = async (url,opts={}) => {
   if ( ! opts.headers ) opts.headers = {}
   opts.headers["Sars-CoV-2-Covid-19"] = window.AUTH_TOKEN;
@@ -15,3 +24,4 @@ const fetchWithAuth = async (url,opts={}) => {
 }
 
 export default fetchWithAuth;
+export { fetchPost };

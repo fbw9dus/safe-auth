@@ -1,6 +1,8 @@
 
 import React from 'react';
 
+import { fetchPost } from '../auth';
+
 import {
   Redirect,
   Link
@@ -20,8 +22,7 @@ export default function Login() {
 
   const submit = e => {
     e.preventDefault();
-    fetch(`/auth/login?name=${name}&pass=${pass}`)
-    .then( response => response.json() )
+    fetchPost('/auth/login',{body:{name,pass}})
     .then( result   => {
       window.AUTH_TOKEN = result.token;
       if ( remember )
