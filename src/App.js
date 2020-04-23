@@ -2,13 +2,17 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+/*
+  Die fetchWithAuth funktion soll funktionieren
+  wie das normale fetch, jedoch automatisch den
+  jwt header hinzufuegen.
+*/
+
 const fetchWithAuth = async (url,opts={}) => {
-  const fetchOptions = {
-    headers: { "Sars-CoV-2-Covid-19": window.AUTH_TOKEN },
-    ...opts
-  }
-  const response = await fetch(url,fetchOptions)
-  return     await response.json()
+  if ( ! opts.headers ) opts.headers = {}
+  opts.headers["Sars-CoV-2-Covid-19"] = window.AUTH_TOKEN;
+  const response = await fetch(url,opts);
+  return           await response.json();
 }
 
 function App() {
