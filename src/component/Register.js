@@ -10,12 +10,12 @@ export default function Login() {
   const [state,setState] = React.useState({
     name:'', pass:'', twice:''
   });
-  const { name, pass, registered, twice } = state;
+  const { name, pass, email, registered, twice } = state;
   const change = e => setState({ ...state, [e.target.name]: e.target.value });
 
   const submit = e => {
     e.preventDefault();
-    fetch(`/register?name=${name}&pass=${pass}`)
+    fetch(`/auth/register?name=${name}&pass=${pass}&email=${email}`)
     .then( response => response.json() )
     .then( result   => setState({ ...state, registered:result.success }) );
   }
@@ -24,6 +24,7 @@ export default function Login() {
 
   return ( <>
     <p><input name="name"  value={name}  onChange={change}/></p>
+    <p><input name="email" value={email}  onChange={change}/></p>
     <p><input name="pass"  value={pass}  onChange={change}/></p>
     <p><input name="twice" value={twice} onChange={change}/></p>
     <p><button onClick={submit}>Register</button></p>

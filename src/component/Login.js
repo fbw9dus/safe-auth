@@ -20,7 +20,7 @@ export default function Login() {
 
   const submit = e => {
     e.preventDefault();
-    fetch(`/login?name=${name}&pass=${pass}`)
+    fetch(`/auth/login?name=${name}&pass=${pass}`)
     .then( response => response.json() )
     .then( result   => {
       window.AUTH_TOKEN = result.token;

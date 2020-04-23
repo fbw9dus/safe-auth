@@ -11,8 +11,12 @@ export default function(){
   const [state,setState] = React.useState({checked:false});
   const check = e => {
     e.preventDefault();
-    fetchWithAuth(`/check`)
+    fetchWithAuth(`/check/`,{method:"POST"})
     .then( result   => setState({ checked: result.success }) );
+  }
+  const logout = e => {
+    localStorage.removeItem('jwt');
+    delete window.AUTH_TOKEN;
   }
   return (
     <div>
@@ -21,6 +25,7 @@ export default function(){
       <Link to="/register">Register</Link>
       <p>
         <button onClick={check}>Test: {state.checked?'yo':'no'}</button>
+        <button onClick={logout}>logout</button>
       </p>
     </div>
   )
